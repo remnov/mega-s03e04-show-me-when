@@ -39,7 +39,6 @@ try {
   proof.events.push({at:seconds(),event:'pointer-over-ack',id:proof.intendedId});
   await page.waitForFunction(id=>document.querySelector('[data-testid="incident-row"]')?.dataset.id!==id,proof.intendedId,{timeout:25000});
   proof.events.push({at:seconds(),event:'new-top-row',id:await page.getByTestId('incident-row').first().getAttribute('data-id')});
-  await page.waitForTimeout(1500);
   if(mode==='pointer') {
     await page.mouse.click(proof.pointer.x,proof.pointer.y);
   } else {
