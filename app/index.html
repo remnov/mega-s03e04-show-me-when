@@ -21,6 +21,16 @@
       <p data-testid="status" role="status" class="status" aria-live="polite"></p>
       <ul data-testid="incident-list" class="list" hidden></ul>
     </main>
+    <dialog data-testid="confirm" aria-labelledby="confirm-title">
+      <h2 id="confirm-title">Acknowledge <span data-testid="confirm-id"></span>?</h2>
+      <p data-testid="confirm-description"></p>
+      <p>You are taking responsibility for this incident. Check its ID before confirming.</p>
+      <p data-testid="confirm-error" role="alert"></p>
+      <div class="dialog-actions">
+        <button type="button" data-testid="confirm-cancel" class="secondary">Cancel</button>
+        <button type="button" data-testid="confirm-ack">Confirm Ack</button>
+      </div>
+    </dialog>
     <footer>Times shown in your local time zone · Build <code data-testid="build-sha">development</code></footer>
   </body>
 </html>

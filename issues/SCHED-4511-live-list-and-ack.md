@@ -11,4 +11,6 @@ On-call needs to see new incidents the moment they come in and take one with a c
 - Each row gets an **Ack** button (`data-testid="ack"`). Clicking it calls `api.ack(id)` and marks the row
   acked (`data-testid="acked"`) (R2).
 
-Acceptance: a new incident shows at the top without a reload; Ack on a row acks that incident.
+Acceptance: a new incident shows at the top without a reload; Ack on a row opens a confirmation
+naming that incident's ID. Confirm Ack sends the acknowledgement for that exact ID; Cancel or Escape
+sends no acknowledgement. Product amended R2 after reviewing the first-build proof on 15 November 2026.

@@ -27,6 +27,14 @@ button:disabled { opacity: .65; cursor: wait; }
 .notice { padding: 28px; background: white; border: 1px solid #dce4e5; border-radius: 8px; }
 .status { color: #805600; font-size: 13px; }
 .status:empty { display: none; }
+dialog { width: min(520px, calc(100vw - 32px)); padding: 28px; color: #172b36; border: 1px solid #dce4e5; border-radius: 12px; box-shadow: 0 16px 80px #172b3633; }
+dialog::backdrop { background: #172b3680; }
+dialog h2 { margin-top: 0; font-size: 23px; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+.secondary { background: white; color: #216b67; }
+.secondary:hover { background: #edf5f4; }
+[data-testid="confirm-error"] { color: #a22236; }
+[data-testid="confirm-error"]:empty { display: none; }
 footer { font-size: 12px; color: #546973; overflow-wrap: anywhere; }
 [hidden] { display: none !important; }
 @media(max-width: 800px) {

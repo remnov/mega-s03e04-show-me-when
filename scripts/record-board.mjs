@@ -1,8 +1,9 @@
 import { chromium } from 'playwright';
 import { mkdir, writeFile, copyFile } from 'node:fs/promises';
+import assert from 'node:assert/strict';
 
 const [url, output, mode = 'pointer'] = process.argv.slice(2);
-if (!url || !output) throw new Error('Usage: record-board.mjs <deployed URL> <private output directory> [pointer|stable]');
+if (!url || !output) throw new Error('Usage: record-board.mjs <deployed URL> <private output directory> [pointer|stable|confirm]');
 await mkdir(output, {recursive:true});
 const browser = await chromium.launch({headless:true,channel:'chromium'});
 const context = await browser.newContext({
@@ -39,10 +40,29 @@ try {
   proof.events.push({at:seconds(),event:'pointer-over-ack',id:proof.intendedId});
   await page.waitForFunction(id=>document.querySelector('[data-testid="incident-row"]')?.dataset.id!==id,proof.intendedId,{timeout:25000});
   proof.events.push({at:seconds(),event:'new-top-row',id:await page.getByTestId('incident-row').first().getAttribute('data-id')});
-  if(mode==='pointer') {
+  if(mode==='pointer' || mode==='confirm') {
     await page.mouse.click(proof.pointer.x,proof.pointer.y);
   } else {
     await page.locator(`[data-testid="incident-row"][data-id="${proof.intendedId}"]`).getByTestId('ack').click();
+  }
+  if(mode==='confirm') {
+    await page.getByTestId('confirm').waitFor();
+    const named=await page.getByTestId('confirm-id').innerText();
+    assert.equal(proof.acks.length,0);
+    proof.events.push({at:seconds(),event:'moved-row-confirmation',id:named,acksSent:proof.acks.length});
+    await page.screenshot({path:`${output}/moved-row-confirmation.png`});
+    await page.waitForTimeout(2200);
+    await page.getByTestId('confirm-cancel').click();
+    assert.equal(proof.acks.length,0);
+    proof.events.push({at:seconds(),event:'cancelled-wrong-target',id:named,acksSent:proof.acks.length});
+    await page.locator(`[data-testid="incident-row"][data-id="${proof.intendedId}"]`).getByTestId('ack').click();
+    await page.getByTestId('confirm').waitFor();
+    assert.equal(await page.getByTestId('confirm-id').innerText(),proof.intendedId);
+    proof.events.push({at:seconds(),event:'intended-row-confirmation',id:proof.intendedId});
+    await page.screenshot({path:`${output}/intended-row-confirmation.png`});
+    await page.waitForTimeout(2300);
+    assert.equal(await page.getByTestId('confirm-id').innerText(),proof.intendedId);
+    await page.getByTestId('confirm-ack').click();
   }
   await page.getByTestId('acked').first().waitFor();
   await page.waitForTimeout(2500);

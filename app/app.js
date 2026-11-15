@@ -10,6 +10,58 @@ const acked = new Map();
 const pending = new Set();
 let loading = false;
 let refreshFailed = false;
+const confirmation = document.querySelector('[data-testid="confirm"]');
+const confirmAck = document.querySelector('[data-testid="confirm-ack"]');
+const confirmCancel = document.querySelector('[data-testid="confirm-cancel"]');
+const confirmError = document.querySelector('[data-testid="confirm-error"]');
+let selected = null;
+
+function cancelConfirmation() {
+  if (selected && pending.has(selected.id)) return;
+  selected = null;
+  confirmation.close();
+}
+
+confirmCancel.addEventListener('click', cancelConfirmation);
+confirmation.addEventListener('cancel', event => {
+  event.preventDefault();
+  cancelConfirmation();
+});
+confirmAck.addEventListener('click', async () => {
+  if (!selected || pending.has(selected.id)) return;
+  const incident = selected;
+  const row = rows.get(incident.id);
+  pending.add(incident.id);
+  confirmAck.disabled = true;
+  confirmCancel.disabled = true;
+  confirmAck.textContent = 'Acknowledging…';
+  confirmError.textContent = '';
+  if (row) renderAction(row, incident);
+  try {
+    const result = await ack(incident.id);
+    acked.set(incident.id, result);
+    status.textContent = `${incident.id} acknowledged.`;
+    selected = null;
+    confirmation.close();
+  } catch {
+    confirmError.textContent = `Could not acknowledge ${incident.id}. Please try again.`;
+  } finally {
+    pending.delete(incident.id);
+    confirmAck.disabled = false;
+    confirmCancel.disabled = false;
+    confirmAck.textContent = 'Confirm Ack';
+    if (row) renderAction(row, incident);
+  }
+});
+
+function askToAcknowledge(incident) {
+  selected = incident;
+  document.querySelector('[data-testid="confirm-id"]').textContent = incident.id;
+  document.querySelector('[data-testid="confirm-description"]').textContent = `${incident.service} · ${incident.region} · ${incident.summary}`;
+  confirmError.textContent = '';
+  confirmation.showModal();
+  confirmCancel.focus();
+}
 
 function text(className, value) {
   const element = document.createElement('span');
@@ -47,21 +99,7 @@ function renderAction(row, incident) {
     button.dataset.testid = 'ack';
     button.type = 'button';
     button.setAttribute('aria-label', `Acknowledge ${incident.id}`);
-    button.addEventListener('click', async () => {
-      if (pending.has(incident.id)) return;
-      pending.add(incident.id);
-      renderAction(row, incident);
-      try {
-        const result = await ack(incident.id);
-        acked.set(incident.id, result);
-        status.textContent = `${incident.id} acknowledged.`;
-      } catch {
-        status.textContent = `Could not acknowledge ${incident.id}. Please try again.`;
-      } finally {
-        pending.delete(incident.id);
-        renderAction(row, incident);
-      }
-    });
+    button.addEventListener('click', () => askToAcknowledge(incident));
     action.replaceChildren(button);
   }
   button.disabled = pending.has(incident.id);
