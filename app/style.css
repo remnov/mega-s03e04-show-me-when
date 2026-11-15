@@ -1,0 +1,38 @@
+:root { color-scheme: light; font: 15px/1.5 system-ui, sans-serif; color: #172b36; background: #f2f5f5; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+header, main, footer { max-width: 1280px; margin: auto; padding: 24px 32px; }
+header { padding-top: 40px; border-bottom: 1px solid #d6e0e2; }
+h1 { margin: 4px 0; font-size: 32px; letter-spacing: -1px; font-weight: 650; }
+.eyebrow { margin: 0; color: #216b67; font-size: 12px; font-weight: 750; letter-spacing: 1.5px; }
+.sub { margin: 0; color: #546973; }
+.updated { margin: 18px 0 0; color: #546973; font-size: 13px; }
+.list { list-style: none; margin: 0; padding: 0; }
+.row { display: grid; grid-template-columns: 100px 56px minmax(180px,1fr) 190px 88px; gap: 16px; align-items: center; min-height: 90px; padding: 18px 20px; border: 1px solid #dce4e5; border-left: 4px solid #92a6ad; border-radius: 8px; margin-bottom: 10px; background: #fff; }
+.id { font: 13px ui-monospace, monospace; }
+.sev { font-size: 12px; font-weight: 750; text-transform: uppercase; }
+.row.sev1 { border-left-color: #bd3444; }
+.row.sev1 .sev { color: #a22236; }
+.row.sev2 { border-left-color: #b77c18; }
+.row.sev2 .sev { color: #8d5905; }
+.service, .summary { display: block; }
+.service { font-size: 12px; color: #546973; }
+.summary { font-weight: 550; }
+time { color: #546973; font-size: 13px; font-variant-numeric: tabular-nums; }
+button { border: 1px solid #216b67; border-radius: 6px; background: #216b67; color: white; padding: 8px 14px; font: inherit; font-weight: 650; cursor: pointer; }
+button:hover { background: #164d4b; }
+button:focus-visible { outline: 3px solid #62b6b0; outline-offset: 3px; }
+button:disabled { opacity: .65; cursor: wait; }
+.acked { color: #216b67; font-weight: 650; }
+.notice { padding: 28px; background: white; border: 1px solid #dce4e5; border-radius: 8px; }
+.status { color: #805600; font-size: 13px; }
+.status:empty { display: none; }
+footer { font-size: 12px; color: #546973; overflow-wrap: anywhere; }
+[hidden] { display: none !important; }
+@media(max-width: 800px) {
+  header, main, footer { padding: 20px 16px; }
+  .row { grid-template-columns: 1fr auto; gap: 8px 16px; }
+  .what { grid-column: 1 / -1; grid-row: 2; }
+  .action { grid-column: 2; grid-row: 3; }
+  time { grid-column: 1; grid-row: 3; }
+}
